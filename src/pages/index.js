@@ -1,21 +1,41 @@
 import React from "react"
-import { Link } from "gatsby"
+import { Link } from 'gatsby';
+import axios from 'axios';
 
 import Layout from "../components/layout"
-import Image from "../components/image"
 import SEO from "../components/seo"
 
-const IndexPage = () => (
-  <Layout>
-    <SEO title="Home" />
-    <h1>Hi people</h1>
-    <p>Welcome to your new Gatsby site.</p>
-    <p>Now go build something great.</p>
-    <div style={{ maxWidth: `300px`, marginBottom: `1.45rem` }}>
-      <Image />
-    </div>
-    <Link to="/page-2/">Go to page 2</Link>
-  </Layout>
-)
+class Index extends React.Component{
 
-export default IndexPage
+
+  state = {
+    articles: []
+  }
+  
+
+  render(){
+    return(
+      <Layout>
+        <SEO title="Home" />
+        <ul>
+          {this.state.articles.map( article => {
+            return (
+              <li> <Link dangerouslySetInnerHTML= {{__html: article.title}} to={`/article?node=${article.nid}`}></Link></li>
+            )
+          })}
+        </ul>
+      </Layout>
+    )
+  }
+
+  componentDidMount(){
+    axios.get(`http://localhost:8080/drupal-guide/node/rest?_format=json`).then( res => {
+      this.setState({
+          articles: res.data
+      })
+    })
+  }
+
+}
+
+export default Index
